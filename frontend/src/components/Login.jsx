@@ -1,7 +1,5 @@
-/* eslint-disable no-unused-vars */
-// Login.jsx
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -35,7 +33,8 @@ const Login = () => {
 
       if (response.status === 200) {
         toast.success("Logged in successfully");
-        localStorage.setItem("token", response.data.token);
+        console.log(response?.data?.token);
+
         setTimeout(() => {
           navigate("/");
         }, 1500);
@@ -43,6 +42,7 @@ const Login = () => {
 
       setFormData({ email: "", password: "" });
     } catch (e) {
+      console.log(e);
       toast.error("Login failed. Check credentials.");
       setFormData({ email: "", password: "" });
     }

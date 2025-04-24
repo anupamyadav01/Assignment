@@ -1,35 +1,23 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
-
-// Check login status (use cookies if you're using them, else localStorage is fine)
-const isLoggedIn = () => {
-  const token = localStorage.getItem("token");
-  return !!token;
-};
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Home (Protected Route) */}
         <Route
           path="/"
-          element={isLoggedIn() ? <Home /> : <Navigate to="/login" replace />}
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
         />
-
-        {/* Login Route (only for guests) */}
-        <Route
-          path="/login"
-          element={!isLoggedIn() ? <Login /> : <Navigate to="/" replace />}
-        />
-
-        {/* Register Route (only for guests) */}
-        <Route
-          path="/register"
-          element={!isLoggedIn() ? <Register /> : <Navigate to="/" replace />}
-        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

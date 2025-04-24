@@ -34,7 +34,6 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Hello we are in loginUser");
 
   try {
     if (!email || !password) {
@@ -64,13 +63,29 @@ export const loginUser = async (req, res) => {
     res.cookie("token", token, {
       path: "/",
       httpOnly: true,
+      sameSite: "strict",
+      maxAge: 1000 * 60 * 60 * 24,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
     });
+    console.log("token from controller", token);
 
-    return res.status(200).json({ user: existingUser });
+    return res.status(200).json({ user: existingUser, token });
   } catch (error) {
     console.log("Error in loginUser: ", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const verifyToken = (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "Not authorized" });
+  console.log("verify token", token);
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({ user: decoded });
+  } catch (err) {
+    res.status(401).json({ message: "Token verification failed" });
   }
 };
